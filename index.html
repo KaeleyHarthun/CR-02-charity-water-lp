@@ -4,44 +4,383 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Charity Water Landing Page</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        /* Use Proxima Nova font, fallback to Arial and sans-serif */
+        font-family: 'Proxima Nova', Arial, sans-serif;
+        background-color: #fff7e1;
+        color: #333;
+      }
+
+      /* Hero section styles */
+      .hero {
+        /* The hero image now has less vertical padding to reduce its height */
+        background: url('img/Zimbabwe_2022_CG-7848.jpg') no-repeat center center/cover;
+        color: #1a1a1a;
+        text-align: center;
+        padding: 120px 20px 60px 20px; /* Reduced top and bottom padding */
+        position: relative;
+        min-height: 350px; /* Reduced minimum height */
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 123, 167, 0.55);
+      }
+
+      /* Logo slot in the upper left corner */
+      .hero-logo {
+        /* Move the logo up by using a negative top value */
+        position: absolute;
+        top: -80px; /* Moves the logo up */
+        left: 24px;
+        z-index: 2;
+        /* Remove background and border for a clean look */
+        background: none;
+        border-radius: 0;
+        padding: 0;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 260px; /* Make the logo bigger */
+        height: auto;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        margin: auto;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 1s ease;
+      }
+
+      .hero-content.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .hero p {
+        font-size: 1rem;
+        margin-bottom: 30px;
+      }
+
+      .btn {
+        padding: 14px 28px;
+        border: none;
+        border-radius: 28px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        margin: 8px;
+        transition: all 0.3s ease;
+        color: #1a1a1a;
+      }
+
+      .btn-donate {
+        background-color: #ffc907;
+        font-size: 1.2rem;
+        padding: 16px 32px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-donate:hover {
+        background-color: #e6b700;
+        transform: scale(1.08);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      }
+
+      .btn-impact {
+        background-color: #fff7e1;
+        font-size: 1.2rem;
+        padding: 16px 32px;
+        border-radius: 28px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-impact:hover {
+        background-color: #e6e0c9;
+        transform: scale(1.08);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      }
+
+      .impact-section {
+        background-color: #fff7e1;
+        padding: 100px 20px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 1s ease;
+      }
+
+      .impact-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .impact-section h2 {
+        margin-bottom: 20px;
+        font-size: 2rem;
+        font-weight: 600;
+        position: relative;
+        display: inline-block;
+      }
+
+      .impact-section h2::after {
+        content: "";
+        display: block;
+        width: 60%;
+        height: 3px;
+        background-color: #77a8bb;
+        margin: 10px auto 0;
+        border-radius: 2px;
+      }
+
+      .impact-stats {
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+        color: #555;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .impact-stats strong {
+        font-size: 1.4rem;
+        color: #77a8bb;
+        font-weight: 700;
+      }
+
+      /* Impact Gallery Styles */
+      .impact-gallery {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto 20px auto;
+        gap: 20px;
+        padding: 20px 0;
+        box-sizing: border-box;
+      }
+
+      .impact-gallery img {
+        flex: 0 1 200px;
+        height: 220px;
+        width: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        opacity: 0;
+        transform: translateY(20px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        background-color: #e6e0c9;
+      }
+
+      .impact-gallery img.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .impact-gallery img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+      }
+
+      /* Popup overlay for enlarged gallery images */
+      .popup-overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7); /* Semi-transparent background */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .popup-overlay.active {
+        display: flex; /* Show the popup when active */
+      }
+
+      .popup-image {
+        max-width: 90vw;
+        max-height: 80vh;
+        border-radius: 10px;
+        background: #fff;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+
+      .popup-close {
+        position: absolute;
+        top: 30px;
+        right: 40px;
+        font-size: 2rem;
+        color: #fff;
+        background: none;
+        border: none;
+        cursor: pointer;
+        z-index: 1001;
+      }
+
+      /* Responsive: stack images on small screens */
+      @media (max-width: 900px) {
+        .impact-gallery {
+          max-width: 100%;
+          gap: 10px;
+        }
+        .impact-gallery img {
+          height: 140px;
+          width: 120px;
+        }
+        .hero {
+          padding: 120px 10px 60px 10px;
+          min-height: 350px;
+        }
+        .hero-logo {
+          width: 60px;
+          top: 12px;
+          left: 12px;
+          padding: 4px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .impact-gallery {
+          flex-direction: column;
+          gap: 12px;
+          padding: 10px 0;
+        }
+        .impact-gallery img {
+          width: 100%;
+          height: 100px;
+        }
+        .hero {
+          padding: 80px 5px 40px 5px;
+          min-height: 220px;
+        }
+        .hero-logo {
+          width: 40px;
+          top: 6px;
+          left: 6px;
+          padding: 2px;
+        }
+      }
+    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      @font-face {
+        font-family: 'Proxima Nova';
+        src: local('Proxima Nova'), local('ProximaNova-Regular');
+        font-weight: 400;
+        font-style: normal;
+      }
+    </style>
+  </head>
 <body>
-    <!-- Hero Section: This is the main banner at the top of the page -->
-    <section class="hero">
-        <!-- Main headline -->
-        <h1>Clean Water for Everyone</h1>
-        <!-- Subheadline -->
-        <p>Join us in bringing safe, clean water to communities in need.</p>
-    </section>
 
-    <!-- Story Section: This tells the story of the nonprofit -->
-    <section class="story">
-        <h2>Our Story</h2>
-        <p>
-         
-    </section>
+  <!-- Hero Section -->
+  <section class="hero">
+    <!-- Logo slot in the upper left corner -->
+    <div class="hero-logo">
+      <!-- Logo image for the hero section -->
+      <!-- The logo will be bigger and moved up -->
+      <img src="img/charitywater_logo_horizontal_BlackText.png" alt="Charity Water Logo" style="width:100%;height:auto;">
+    </div>
+    <div class="hero-content">
+      <h1>Your Generation. Your Impact. Give Clean Water.</h1>
+      <p>Whether it’s $5 or $50, your impact is real. 100% of public donations go directly to clean water projects—tracked and transparent.</p>
+      <a href="https://www.charitywater.org/donate/the-spring" target="_blank" class="btn btn-donate">Donate Now</a>
+      <a href="https://www.charitywater.org/our-work" target="_blank" class="btn btn-impact">See Your Impact</a>
+    </div>
+  </section>
 
-    <!-- Real-World Impact Story Section -->
-    <section class="impact-story">
-        <!-- Section headline -->
-        <h2>Real Impact: Meet Amina</h2>
-        <!-- Container for image and text -->
-        <div class="impact-content">
-            <!-- Impact image -->
-            <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80" alt="Amina smiling with clean water" class="impact-image">
-            <!-- Impact story text -->
-            <p>
-                Amina used to walk miles every day to collect water for her family. Thanks to your support, her village now has a clean water well. Amina can go to school and her family is healthier and happier.
-            </p>
-        </div>
-    </section>
+  <!-- Impact Section -->
+  <section id="impact" class="impact-section">
+    <h2>See Our Impact</h2>
+    <p class="impact-stats">Over <strong>20 million people</strong> served with <strong>186,000 water projects</strong> in <strong>29 countries</strong>.</p>
+    <div class="impact-gallery">
+      <!-- When a gallery image is clicked, it will open in a popup window -->
+      <img src="img/Madagascar_2019_CG-0318.jpg" alt="Impact 1">
+      <img src="img/7255_Ethiopia_2019_CG-.jpg" alt="Impact 2">
+      <img src="img/JS_20170803_2360.jpg" alt="Impact 3">
+      <img src="img/charity_water_Tanzania_TaraShupePhotography_0008.jpg" alt="Impact 4">
+      <img src="img/charity_water_Tanzania_TaraShupePhotography_0074.jpg" alt="Impact 5">
+    </div>
+    <!-- Popup overlay for enlarged image -->
+    <div class="popup-overlay" id="popupOverlay">
+      <button class="popup-close" id="popupClose">&times;</button>
+      <img src="" alt="Enlarged Impact Photo" class="popup-image" id="popupImage">
+    </div>
+  </section>
 
-    <!-- Call-to-Action Section: This encourages visitors to take action -->
-    <section class="call-to-action">
-        <h2>Make a Difference</h2>
-        <p>Your support can help save lives. Every donation brings us closer to a world with clean water for all.</p>
-        <a href="#" class="donate-button">Donate Now</a>
-    </section>
+  <script>
+    // Intersection Observer for fade-in effect
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.hero-content, .impact-section, .impact-gallery img').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Simple popup for gallery images
+    // Get all gallery images
+    var galleryImages = document.querySelectorAll('.impact-gallery img');
+    // Get popup elements
+    var popupOverlay = document.getElementById('popupOverlay');
+    var popupImage = document.getElementById('popupImage');
+    var popupClose = document.getElementById('popupClose');
+
+    // Add click event to each gallery image
+    galleryImages.forEach(function(img) {
+      img.addEventListener('click', function() {
+        popupImage.src = img.src; // Set popup image source to clicked image
+        popupOverlay.classList.add('active'); // Show popup
+      });
+    });
+
+    // Close popup when close button is clicked
+    popupClose.addEventListener('click', function() {
+      popupOverlay.classList.remove('active');
+      popupImage.src = "";
+    });
+
+    // Also close popup when clicking outside the image
+    popupOverlay.addEventListener('click', function(e) {
+      if (e.target === popupOverlay) {
+        popupOverlay.classList.remove('active');
+        popupImage.src = "";
+      }
+    });
+  </script>
+
 </body>
 </html>
